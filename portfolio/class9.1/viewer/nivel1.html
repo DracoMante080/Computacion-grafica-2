@@ -115,15 +115,15 @@
   <div id="debug">Iniciando escena...</div>
   <div id="game-container"></div>
 
+  <audio id="bgMusic" loop>
+    <source src="../src/sounds/batalla.mp3" type="audio/mpeg">
+    Tu navegador no soporta audio.
+  </audio>
+
   <script>
     function goBack() {
       window.location.href = "../index.html";
     }
-  </script>
-
-  <script type="module">
-    import * as THREE from "three";
-    import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 
     const debugEl = document.getElementById("debug");
     function setDebug(msg) {
@@ -134,6 +134,29 @@
         debugEl.classList.add("hidden");
       }, 2500);
     }
+
+    // AUDIO
+    window.addEventListener("load", function () {
+      const audio = document.getElementById("bgMusic");
+      audio.volume = 0.5;
+
+      function reproducir() {
+        audio.play().then(function () {
+          document.removeEventListener("click", reproducir);
+          document.removeEventListener("keydown", reproducir);
+        }).catch(function () {
+          console.log("Esperando interacción para reproducir audio...");
+        });
+      }
+
+      document.addEventListener("click", reproducir);
+      document.addEventListener("keydown", reproducir);
+    });
+  </script>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 
     const OBJ_URL = "/portfolio/class9.1/src/models/obj/pokemon.obj";
     const TEX_URL = "/portfolio/class9.1/src/models/obj/pokemon.png";
@@ -167,7 +190,6 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
-    // luces
     scene.add(new THREE.AmbientLight(0xffffff, 2.8));
 
     const hemi = new THREE.HemisphereLight(0xffffff, 0x7fd36c, 1.8);
@@ -181,7 +203,6 @@
     frontLight.position.set(0, 15, 25);
     scene.add(frontLight);
 
-    // suelo
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(400, 400),
       new THREE.MeshStandardMaterial({
@@ -193,7 +214,6 @@
     ground.position.y = 0;
     scene.add(ground);
 
-    // camino
     const path = new THREE.Mesh(
       new THREE.BoxGeometry(18, 0.12, 120),
       new THREE.MeshStandardMaterial({
@@ -204,7 +224,6 @@
     path.position.set(0, 0.06, 5);
     scene.add(path);
 
-    // cubo de respaldo
     const fallbackCube = new THREE.Mesh(
       new THREE.BoxGeometry(4, 4, 4),
       new THREE.MeshStandardMaterial({ color: 0xffc400 })
@@ -223,18 +242,15 @@
       const center = box.getCenter(new THREE.Vector3());
       const size = box.getSize(new THREE.Vector3());
 
-      // centrar al origen
       model.position.x -= center.x;
       model.position.y -= box.min.y;
       model.position.z -= center.z;
 
-      // escala
       const maxDim = Math.max(size.x, size.y, size.z);
       const targetSize = 11;
       const scaleFactor = targetSize / maxDim;
       model.scale.setScalar(scaleFactor);
 
-      // recalcular
       const box2 = new THREE.Box3().setFromObject(model);
       const center2 = box2.getCenter(new THREE.Vector3());
 
@@ -242,7 +258,6 @@
       model.position.z -= center2.z;
       model.position.y -= box2.min.y;
 
-      // posición final centrada
       model.position.set(0, 0, -2);
 
       const finalBox = new THREE.Box3().setFromObject(model);
