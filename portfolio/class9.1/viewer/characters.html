@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon World - Characters</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@400;700;900&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            color: #1f2d3d;
+            overflow-x: hidden;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(255,255,255,0.85) 0 6%, transparent 7%),
+                radial-gradient(circle at 22% 18%, rgba(255,255,255,0.75) 0 5%, transparent 6%),
+                radial-gradient(circle at 80% 12%, rgba(255,255,255,0.85) 0 7%, transparent 8%),
+                radial-gradient(circle at 88% 15%, rgba(255,255,255,0.75) 0 5%, transparent 6%),
+                linear-gradient(180deg, #7fd3ff 0%, #b8ecff 36%, #d8f7ff 55%, #7fd36c 56%, #49a54d 76%, #2f7d35 100%);
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 34vh;
+            background:
+                radial-gradient(circle at 20% 100%, #5dc35b 0 18%, transparent 19%),
+                radial-gradient(circle at 38% 100%, #6ccd63 0 20%, transparent 21%),
+                radial-gradient(circle at 58% 100%, #59b94e 0 20%, transparent 21%),
+                radial-gradient(circle at 78% 100%, #68c85d 0 18%, transparent 19%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 55px;
+            right: 70px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 50%, #fff6a8 0%, #ffd94d 58%, #ffb800 100%);
+            box-shadow: 0 0 45px rgba(255, 210, 70, 0.55);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .screen-container {
+            width: 92%;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 30px;
+            position: relative;
+            z-index: 2;
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.82);
+            border: 5px solid #2452a3;
+            box-shadow:
+                0 10px 0 #0d2c66,
+                0 18px 35px rgba(0, 0, 0, 0.22);
+            backdrop-filter: blur(4px);
+        }
+
+        .screen-container::before {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border: 3px solid #ffcb05;
+            border-radius: 18px;
+            pointer-events: none;
+        }
+
+        .screen-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .screen-header h1 {
+            margin: 0;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 3.6rem;
+            letter-spacing: 2px;
+            color: #ffcb05;
+            text-shadow:
+                -3px -3px 0 #2452a3,
+                3px -3px 0 #2452a3,
+                -3px 3px 0 #2452a3,
+                3px 3px 0 #2452a3,
+                0 6px 0 rgba(0,0,0,0.12);
+        }
+
+        .subtitle {
+            margin: 10px 0 0 0;
+            font-weight: 900;
+            color: #2452a3;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(260px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: linear-gradient(180deg, #ffffff 0%, #f4faff 100%);
+            border: 4px solid #2452a3;
+            border-radius: 24px;
+            padding: 22px;
+            text-align: center;
+            box-shadow:
+                0 8px 0 #16356c,
+                0 12px 22px rgba(0, 0, 0, 0.12);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: -25px;
+            right: -25px;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #ff4d4d 0 48%, #ffffff 48% 100%);
+            border: 5px solid #222;
+            opacity: 0.16;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow:
+                0 10px 0 #16356c,
+                0 18px 28px rgba(0, 0, 0, 0.16);
+        }
+
+        .card h2 {
+            margin: 0 0 10px 0;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 2rem;
+            color: #ffcb05;
+            text-shadow:
+                -2px -2px 0 #2452a3,
+                2px -2px 0 #2452a3,
+                -2px 2px 0 #2452a3,
+                2px 2px 0 #2452a3;
+            letter-spacing: 1px;
+        }
+
+        .card p {
+            margin: 0;
+            min-height: 72px;
+            font-size: 1rem;
+            line-height: 1.55;
+            font-weight: 700;
+            color: #28415a;
+        }
+
+        .bottom-actions {
+            margin-top: 28px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .card button,
+        .secondary-btn {
+            border: none;
+            border-radius: 16px;
+            padding: 12px 22px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+
+        .card button {
+            margin-top: 18px;
+            background: linear-gradient(180deg, #ffda3a 0%, #ffbf00 100%);
+            color: #13346d;
+            border: 3px solid #2452a3;
+            box-shadow: 0 5px 0 #16356c;
+        }
+
+        .secondary-btn {
+            background: linear-gradient(180deg, #3d7df0 0%, #2452a3 100%);
+            color: white;
+            border: 3px solid #ffcb05;
+            box-shadow: 0 5px 0 #16356c;
+        }
+
+        .card button:hover,
+        .secondary-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        @media (max-width: 900px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .screen-header h1 {
+                font-size: 2.6rem;
+            }
+
+            .screen-container {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-container">
+        <div class="screen-header">
+            <h1>Pokemon World</h1>
+            <p class="subtitle">Choose your character</p>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <h2>Snorlax</h2>
+                <p>Tipo normal, Evolucion de Munchlax, Alta resistencia</p>
+                <button onclick="selectCharacter('Snorlax')">Select</button>
+            </div>
+
+            <div class="card">
+                <h2>Porygon</h2>
+                <p>Tipo normal, Pre-evolucion de Porygon2, neutral a los movimientos de todos los tipos</p>
+                <button onclick="selectCharacter('Porygon')">Select</button>
+            </div>
+
+            <div class="card">
+                <h2>Dusclops</h2>
+                <p>Tipo fantasma, Evolucion de Duskull, Inmune a los movimientos de tipo Normal</p>
+                <button onclick="selectCharacter('Dusclops')">Select</button>
+            </div>
+
+            <div class="card">
+                <h2>Ditto</h2>
+                <p>Tipo normal, No tiene evolucion, Usa el movimiento Transformarse</p>
+                <button onclick="selectCharacter('Ditto')">Select</button>
+            </div>
+        </div>
+
+        <div class="bottom-actions">
+            <button class="secondary-btn" onclick="goBack()">Back to Menu</button>
+        </div>
+    </div>
+
+    <script>
+        function selectCharacter(name) {
+            localStorage.setItem("pokemonCharacter", name);
+            alert("Character selected: " + name);
+        }
+
+        function goBack() {
+            window.location.href = "../index.html";
+        }
+    </script>
+</body>
+</html>
