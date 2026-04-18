@@ -1,7 +1,13 @@
+import * as THREE from "three";
+import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { GUI } from "lil-gui";
+
 const container = document.getElementById("game-container");
 
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0xbfefff, 40, 180);
+scene.background = new THREE.Color(0x87ceeb);
 
 const camera = new THREE.PerspectiveCamera(
     60,
@@ -17,9 +23,6 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 container.appendChild(renderer.domElement);
-
-// CIELO
-scene.background = new THREE.Color(0x87ceeb);
 
 // LUCES
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.3);
@@ -57,7 +60,7 @@ const path = new THREE.Mesh(
 path.position.set(0, 0.1, 8);
 scene.add(path);
 
-// ARBOLITOS DECORATIVOS
+// ARBOLITOS
 function createTree(x, z) {
     const tree = new THREE.Group();
 
@@ -87,7 +90,7 @@ for (let i = -4; i <= 4; i++) {
 }
 
 // MODELO GLB
-const loader = new THREE.GLTFLoader();
+const loader = new GLTFLoader();
 let pokemonModel = null;
 let modelCenter = new THREE.Vector3();
 let modelSize = new THREE.Vector3();
@@ -99,7 +102,6 @@ async function loadModel() {
         pokemonModel = gltf.scene;
         scene.add(pokemonModel);
 
-        // Sombras/materiales
         pokemonModel.traverse((child) => {
             if (child.isMesh) {
                 child.castShadow = false;
@@ -110,41 +112,32 @@ async function loadModel() {
             }
         });
 
-        // Caja inicial
         const box = new THREE.Box3().setFromObject(pokemonModel);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        // Llevar al centro
         pokemonModel.position.x -= center.x;
         pokemonModel.position.y -= box.min.y;
         pokemonModel.position.z -= center.z;
 
-        // Escalado automático
         const maxDim = Math.max(size.x, size.y, size.z);
         const targetSize = 12;
         const scaleFactor = targetSize / maxDim;
         pokemonModel.scale.setScalar(scaleFactor);
 
-        // Recalcular
         const box2 = new THREE.Box3().setFromObject(pokemonModel);
         const center2 = box2.getCenter(new THREE.Vector3());
-        const size2 = box2.getSize(new THREE.Vector3());
 
-        // Centrar otra vez
         pokemonModel.position.x -= center2.x;
         pokemonModel.position.z -= center2.z;
 
-        // Ubicación final en escena
         pokemonModel.position.z = -4;
         pokemonModel.position.y = 0;
 
-        // Caja final
         const finalBox = new THREE.Box3().setFromObject(pokemonModel);
         modelCenter = finalBox.getCenter(new THREE.Vector3());
         modelSize = finalBox.getSize(new THREE.Vector3());
 
-        // Distancia correcta de cámara
         const fitHeightDistance =
             modelSize.y / (2 * Math.tan((Math.PI * camera.fov) / 360));
         const fitWidthDistance = fitHeightDistance / camera.aspect;
@@ -170,6 +163,15 @@ async function loadModel() {
 
 loadModel();
 
+// GUI
+const gui = new GUI();
+
+const lightFolder = gui.addFolder("Lights");
+lightFolder.add(ambientLight, "intensity", 0, 5, 0.1).name("Ambient");
+lightFolder.add(sunLight, "intensity", 0, 5, 0.1).name("Sun");
+lightFolder.add(fillLight, "intensity", 0, 5, 0.1).name("Fill");
+lightFolder.open();
+
 // ANIMACION
 let time = 0;
 
@@ -178,10 +180,8 @@ function animate() {
     time += 0.01;
 
     if (pokemonModel) {
-        // Rotación suave del modelo
         pokemonModel.rotation.y += 0.003;
 
-        // Cámara suave
         camera.position.x = modelCenter.x + Math.sin(time * 0.35) * 1.8;
         camera.position.y = modelCenter.y + modelSize.y * 0.6 + Math.sin(time * 0.2) * 0.15;
         camera.position.z = modelCenter.z + cameraDistance + Math.cos(time * 0.25) * 0.5;

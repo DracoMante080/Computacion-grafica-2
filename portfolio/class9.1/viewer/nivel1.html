@@ -7,7 +7,9 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     html, body {
       margin: 0;
@@ -73,6 +75,10 @@
       box-shadow: 0 4px 0 #183672;
     }
 
+    .back-btn:hover {
+      filter: brightness(1.05);
+    }
+
     #debug {
       position: fixed;
       right: 16px;
@@ -97,12 +103,14 @@
   </style>
 
   <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-    }
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+    "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm"
   }
+}
+</script>
   </script>
 </head>
 <body>
@@ -126,16 +134,17 @@
     }
 
     const debugEl = document.getElementById("debug");
+
     function setDebug(msg) {
       debugEl.textContent = msg;
     }
+
     function hideDebug() {
       setTimeout(() => {
         debugEl.classList.add("hidden");
       }, 2500);
     }
 
-    // AUDIO
     window.addEventListener("load", function () {
       const audio = document.getElementById("bgMusic");
       audio.volume = 0.5;
@@ -290,6 +299,7 @@
         "y=" + finalSize.y.toFixed(2) + "\n" +
         "z=" + finalSize.z.toFixed(2)
       );
+
       hideDebug();
     }
 
@@ -352,6 +362,7 @@
     loadModel();
 
     let time = 0;
+
     function animate() {
       requestAnimationFrame(animate);
       time += 0.01;
