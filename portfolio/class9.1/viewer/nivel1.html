@@ -4,29 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pokemon World - New Game</title>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
-
-    * {
-      box-sizing: border-box;
-    }
-
     html, body {
       margin: 0;
       width: 100%;
       height: 100%;
       overflow: hidden;
-      font-family: 'Fredoka', sans-serif;
       background: #87ceeb;
+      font-family: Arial, sans-serif;
     }
 
     #game-container {
       width: 100vw;
       height: 100vh;
-    }
-
-    canvas {
-      display: block;
     }
 
     #hud {
@@ -35,97 +26,52 @@
       left: 16px;
       z-index: 20;
       padding: 14px 16px;
-      min-width: 240px;
-      border: 4px solid #2b4da2;
-      border-radius: 20px;
+      min-width: 220px;
+      border: 3px solid #2b4da2;
+      border-radius: 16px;
       background: rgba(255, 255, 255, 0.92);
-      box-shadow: 0 8px 0 #16316f, 0 16px 28px rgba(0, 0, 0, 0.18);
-    }
-
-    .hud-title {
-      color: #ffcb05;
-      font-size: 1.4rem;
-      font-weight: 700;
-      text-shadow:
-        -2px -2px 0 #2452a3,
-         2px -2px 0 #2452a3,
-        -2px  2px 0 #2452a3,
-         2px  2px 0 #2452a3;
-    }
-
-    .hud-subtitle {
-      margin-top: 4px;
-      color: #2452a3;
-      font-size: 0.95rem;
-      font-weight: 700;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
     }
 
     .back-btn {
-      margin-top: 12px;
+      margin-top: 10px;
       width: 100%;
-      border: 3px solid #2452a3;
-      border-radius: 14px;
+      border: none;
+      border-radius: 10px;
       padding: 10px 12px;
       cursor: pointer;
-      background: linear-gradient(180deg, #fff05d 0%, #ffc91f 100%);
+      background: #ffc91f;
       color: #17356e;
-      font-family: 'Fredoka', sans-serif;
-      font-weight: 700;
-      font-size: 0.95rem;
-      box-shadow: 0 4px 0 #183672;
+      font-weight: bold;
     }
 
     .back-btn:hover {
       filter: brightness(1.05);
     }
-
-    #debug {
-      position: fixed;
-      right: 16px;
-      top: 16px;
-      z-index: 20;
-      width: 420px;
-      max-width: calc(100vw - 32px);
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: rgba(0, 0, 0, 0.78);
-      color: #fff;
-      font-size: 14px;
-      line-height: 1.45;
-      white-space: pre-wrap;
-      transition: opacity 0.4s ease;
-    }
-
-    #debug.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
   </style>
 
   <script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
-    "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm"
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+      "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm"
+    }
   }
-}
-</script>
   </script>
 </head>
 <body>
   <div id="hud">
-    <div class="hud-title">POKEMON WORLD</div>
-    <div class="hud-subtitle">3D Scene</div>
+    <div><strong>POKEMON WORLD</strong></div>
+    <div>3D Scene</div>
     <button class="back-btn" onclick="goBack()">Back</button>
   </div>
 
-  <div id="debug">Iniciando escena...</div>
   <div id="game-container"></div>
 
   <audio id="bgMusic" loop>
     <source src="../src/sounds/batalla.mp3" type="audio/mpeg">
-    Tu navegador no soporta audio.
+    Your browser does not support the audio element.
   </audio>
 
   <script>
@@ -133,20 +79,10 @@
       window.location.href = "../index.html";
     }
 
-    const debugEl = document.getElementById("debug");
-
-    function setDebug(msg) {
-      debugEl.textContent = msg;
-    }
-
-    function hideDebug() {
-      setTimeout(() => {
-        debugEl.classList.add("hidden");
-      }, 2500);
-    }
-
     window.addEventListener("load", function () {
       const audio = document.getElementById("bgMusic");
+      if (!audio) return;
+
       audio.volume = 0.5;
 
       function reproducir() {
@@ -163,232 +99,6 @@
     });
   </script>
 
-  <script type="module">
-    import * as THREE from "three";
-    import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
-
-    const OBJ_URL = "/portfolio/class9.1/src/models/obj/pokemon.obj";
-    const TEX_URL = "/portfolio/class9.1/src/models/obj/pokemon.png";
-
-    async function fileExists(url) {
-      try {
-        const res = await fetch(url, { method: "GET" });
-        return res.ok;
-      } catch {
-        return false;
-      }
-    }
-
-    const container = document.getElementById("game-container");
-
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87ceeb);
-    scene.fog = new THREE.Fog(0xdff4ff, 180, 420);
-
-    const camera = new THREE.PerspectiveCamera(
-      48,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      3000
-    );
-    camera.position.set(0, 10, 28);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    container.appendChild(renderer.domElement);
-
-    scene.add(new THREE.AmbientLight(0xffffff, 2.8));
-
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x7fd36c, 1.8);
-    scene.add(hemi);
-
-    const sunLight = new THREE.DirectionalLight(0xffffff, 2.5);
-    sunLight.position.set(40, 50, 25);
-    scene.add(sunLight);
-
-    const frontLight = new THREE.DirectionalLight(0xffffff, 1.5);
-    frontLight.position.set(0, 15, 25);
-    scene.add(frontLight);
-
-    const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(400, 400),
-      new THREE.MeshStandardMaterial({
-        color: 0x69c86b,
-        roughness: 1
-      })
-    );
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = 0;
-    scene.add(ground);
-
-    const path = new THREE.Mesh(
-      new THREE.BoxGeometry(18, 0.12, 120),
-      new THREE.MeshStandardMaterial({
-        color: 0xe3dccb,
-        roughness: 1
-      })
-    );
-    path.position.set(0, 0.06, 5);
-    scene.add(path);
-
-    const fallbackCube = new THREE.Mesh(
-      new THREE.BoxGeometry(4, 4, 4),
-      new THREE.MeshStandardMaterial({ color: 0xffc400 })
-    );
-    fallbackCube.position.set(0, 2, 0);
-    scene.add(fallbackCube);
-
-    let pokemonModel = null;
-    let orbitCenter = new THREE.Vector3(0, 0, 0);
-    let lookTarget = new THREE.Vector3(0, 2, 0);
-    let orbitDistance = 24;
-    let orbitHeight = 8;
-
-    function fitModelToView(model) {
-      const box = new THREE.Box3().setFromObject(model);
-      const center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3());
-
-      model.position.x -= center.x;
-      model.position.y -= box.min.y;
-      model.position.z -= center.z;
-
-      const maxDim = Math.max(size.x, size.y, size.z);
-      const targetSize = 11;
-      const scaleFactor = targetSize / maxDim;
-      model.scale.setScalar(scaleFactor);
-
-      const box2 = new THREE.Box3().setFromObject(model);
-      const center2 = box2.getCenter(new THREE.Vector3());
-
-      model.position.x -= center2.x;
-      model.position.z -= center2.z;
-      model.position.y -= box2.min.y;
-
-      model.position.set(0, 0, -2);
-
-      const finalBox = new THREE.Box3().setFromObject(model);
-      const finalCenter = finalBox.getCenter(new THREE.Vector3());
-      const finalSize = finalBox.getSize(new THREE.Vector3());
-
-      orbitCenter.copy(finalCenter);
-      lookTarget.copy(finalCenter);
-      lookTarget.y = finalCenter.y + finalSize.y * 0.35;
-
-      const fitHeightDistance =
-        finalSize.y / (2 * Math.tan((Math.PI * camera.fov) / 360));
-      const fitWidthDistance = fitHeightDistance / camera.aspect;
-      orbitDistance = Math.max(fitHeightDistance, fitWidthDistance) * 2.5;
-      orbitHeight = finalCenter.y + finalSize.y * 0.8;
-
-      camera.position.set(
-        orbitCenter.x,
-        orbitHeight,
-        orbitCenter.z + orbitDistance
-      );
-      camera.lookAt(lookTarget);
-
-      fallbackCube.visible = false;
-
-      setDebug(
-        "Modelo cargado correctamente.\n\n" +
-        "Tamaño final:\n" +
-        "x=" + finalSize.x.toFixed(2) + "\n" +
-        "y=" + finalSize.y.toFixed(2) + "\n" +
-        "z=" + finalSize.z.toFixed(2)
-      );
-
-      hideDebug();
-    }
-
-    async function loadModel() {
-      const objOk = await fileExists(OBJ_URL);
-      const texOk = await fileExists(TEX_URL);
-
-      if (!objOk) {
-        setDebug("No se encontró el OBJ:\n" + OBJ_URL);
-        return;
-      }
-
-      setDebug(
-        "Archivos encontrados.\n\n" +
-        "OBJ: " + OBJ_URL + "\n" +
-        "PNG: " + (texOk ? TEX_URL : "No encontrada") + "\n\n" +
-        "Cargando modelo..."
-      );
-
-      try {
-        const textureLoader = new THREE.TextureLoader();
-        let texture = null;
-
-        if (texOk) {
-          texture = await textureLoader.loadAsync(TEX_URL);
-          texture.colorSpace = THREE.SRGBColorSpace;
-          texture.flipY = false;
-        }
-
-        const objLoader = new OBJLoader();
-        pokemonModel = await objLoader.loadAsync(OBJ_URL);
-        scene.add(pokemonModel);
-
-        pokemonModel.traverse((child) => {
-          if (child.isMesh) {
-            if (texture) {
-              child.material = new THREE.MeshBasicMaterial({
-                map: texture,
-                side: THREE.DoubleSide
-              });
-            } else {
-              child.material = new THREE.MeshStandardMaterial({
-                color: 0xffffff,
-                side: THREE.DoubleSide
-              });
-            }
-          }
-        });
-
-        fitModelToView(pokemonModel);
-      } catch (error) {
-        console.error(error);
-        setDebug(
-          "No se pudo cargar el modelo.\n\n" +
-          "Error:\n" + error
-        );
-      }
-    }
-
-    loadModel();
-
-    let time = 0;
-
-    function animate() {
-      requestAnimationFrame(animate);
-      time += 0.01;
-
-      fallbackCube.rotation.x += 0.01;
-      fallbackCube.rotation.y += 0.015;
-
-      if (pokemonModel) {
-        camera.position.x = orbitCenter.x + Math.sin(time * 0.35) * 1.4;
-        camera.position.z = orbitCenter.z + orbitDistance + Math.cos(time * 0.25) * 0.4;
-        camera.position.y = orbitHeight + Math.sin(time * 0.2) * 0.12;
-        camera.lookAt(lookTarget);
-      } else {
-        camera.lookAt(0, 2, 0);
-      }
-
-      renderer.render(scene, camera);
-    }
-
-    animate();
-
-    window.addEventListener("resize", () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-  </script>
+  <script type="module" src="../src/js/mainLevel.js"></script>
 </body>
 </html>

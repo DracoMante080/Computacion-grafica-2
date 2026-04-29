@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { GUI } from "lil-gui";
 
@@ -164,13 +163,18 @@ async function loadModel() {
 loadModel();
 
 // GUI
-const gui = new GUI();
+const gui = new GUI({ title: "Control Panel" });
 
 const lightFolder = gui.addFolder("Lights");
 lightFolder.add(ambientLight, "intensity", 0, 5, 0.1).name("Ambient");
 lightFolder.add(sunLight, "intensity", 0, 5, 0.1).name("Sun");
 lightFolder.add(fillLight, "intensity", 0, 5, 0.1).name("Fill");
 lightFolder.open();
+
+const sceneFolder = gui.addFolder("Scene");
+sceneFolder.add(scene.fog, "near", 0, 200, 1).name("Fog Near");
+sceneFolder.add(scene.fog, "far", 50, 500, 1).name("Fog Far");
+sceneFolder.open();
 
 // ANIMACION
 let time = 0;
